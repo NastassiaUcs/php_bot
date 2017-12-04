@@ -20,22 +20,23 @@ class Telegram {
         return $this->request('sendMessage', array('chat_id' => $chatId, 'text' => $text));
     }
 
-    private function request($tgMethod, $data = array()) {
+    private function request($tgMethod, $params = array()) {
         $url = $this->url . $tgMethod;
-        //https://stackoverflow.com/a/6609181/2940171
-        $options = array(
-            'http' => array(
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data)
-            )
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        if ($result === false) {
-            throw new Exception ("error while requesting tg api");
+        $ch = curl_init($url);
+        $params = http_build_query($params);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $response = curl_exec($ch);
+        if ($response === false) {
+            throw new Exception(curl_error($ch));
         }
-        $data = json_decode($result, true);
+        curl_close($ch);
+
+        $data = json_decode($response, true);
         if ($data['ok']) {
             return $data['result'];
         }

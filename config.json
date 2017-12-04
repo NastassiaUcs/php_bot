@@ -1,5 +1,6 @@
 {
-  "token": "<app_id>",
+  "token": "<token>",
   "interval": 100,
-  "allowed_ids": []
+  "allowed_ids": [],
+  "webhook": false
 }

@@ -81,7 +81,8 @@ class Bot {
 
 $config = json_decode(file_get_contents('config.json'), true);
 $bot = new Bot($config);
-$bot->startPolling();
-
+if (!$config['webhook']) {
+    $bot->startPolling();
+}
 
 ?>
