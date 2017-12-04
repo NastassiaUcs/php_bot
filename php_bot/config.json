@@ -1,0 +1,5 @@
+{
+  "token": "<app_id>",
+  "interval": 100,
+  "allowed_ids": []
+}
