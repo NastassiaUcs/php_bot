@@ -56,7 +56,9 @@ class Bot {
                 $cmd = $this->loadCommand($data['command_name']);
                 if ($cmd !== false && $cmd instanceof BaseCommand && ($cmd->hasAccess($chatId) || $cmd->hasAccess($userId))) {
                     $result = $cmd->process($chatId, $text, $userId, $packet);
-                    if ($result) {
+                    if(is_array($result)){
+                        $this->tg->{$result["type"]}($chatId, $result["data"]);
+                    }elseif(!empty($return)){
                         $this->tg->sendMessage($chatId, $result);
                     }
                 }
