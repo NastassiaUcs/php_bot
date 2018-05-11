@@ -23,12 +23,9 @@ class Bot {
             require_once $filePath;
             if (class_exists($className)) {
                 return new $className(array('allowed_ids' => $this->config['allowed_ids']), $commandName, $this->tg);
-            } else {
-                throw new Exception("not found class $className in $filePath");
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     private function parseText($text) {
@@ -46,7 +43,6 @@ class Bot {
     }
 
     public function processPacket($packet) {
-        print_r($packet);
         if (isset($packet['message'])) {
             $text = $packet['message']['text'];
             $chatId = $packet['message']['chat']['id'];
