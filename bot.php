@@ -1,9 +1,10 @@
 <?php
-define('DIRECTORY', 'commands');
+define("DIR_BOT_ROOT", __DIR__. "/");
+define("DIR_COMMANDS", DIR_BOT_ROOT . "commands/");
 
 
-require_once __DIR__ . '/' . DIRECTORY . '/_base_command.php';
-require_once __DIR__ . '/telegram.php';
+require_once DIR_COMMANDS . '_base_command.php';
+require_once DIR_BOT_ROOT . '/telegram.php';
 
 class Bot {
     private $config;
@@ -17,12 +18,12 @@ class Bot {
 
     public function loadCommand($commandName) {
         $className = $commandName . "_command";
-        $filePath = __DIR__ . '/' . DIRECTORY . '/' . $commandName . ".php";
+        $filePath = DIR_COMMANDS . $commandName . ".php";
 
         if (file_exists($filePath)) {
             require_once $filePath;
             if (class_exists($className)) {
-                return new $className(array('allowed_ids' => $this->config['allowed_ids']), $commandName, $this->tg);
+                return new $className(['allowed_ids' => $this->config['allowed_ids']], $commandName, $this->tg);
             }
         }
         return false;
@@ -42,7 +43,7 @@ class Bot {
         return $result;
     }
 
-    public function processPacket($packet) {
+    public function processPacket($packet){
         if (isset($packet['message'])) {
             $text = $packet['message']['text'];
             $chatId = $packet['message']['chat']['id'];
@@ -77,8 +78,9 @@ class Bot {
     }
 }
 
-$config = json_decode(file_get_contents('config.json'), true);
+$config = json_decode(file_get_contents(DIR_BOT_ROOT . "config.json"), true);
 $bot = new Bot($config);
+
 if (!$config['webhook']) {
     $bot->startPolling();
 }
