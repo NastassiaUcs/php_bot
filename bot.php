@@ -55,7 +55,7 @@ class Bot {
                     $result = $cmd->process($chatId, $text, $userId, $packet);
                     if(is_array($result)){
                         $this->tg->{$result["type"]}($chatId, $result["data"]);
-                    }elseif(!empty($return)){
+                    }elseif(!empty($result)){
                         $this->tg->sendMessage($chatId, $result);
                     }
                 }
