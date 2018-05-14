@@ -33,11 +33,15 @@ class Telegram {
     /**
      * Метод отправки изображений/фотографий
      * @param  [int]  $chatId     [ID чата]
-     * @param  [string] $pathToFile [ПОЛНЫЙ ПУТЬ к файлу картинки от корня]
+     * @param  [string] $pathToFile [ПОЛНЫЙ ПУТЬ к файлу картинки от корня ИЛИ прямой URL к картинке]
      * @return [type]             [description]
      */
     public function sendPhoto($chatId, $pathToFile){
-        return $this->request('sendPhoto', ["chat_id" => $chatId, "photo" => new CURLFile(realpath($pathToFile))]);
+        
+        if(filter_var($pathToFile, FILTER_VALIDATE_URL) === FALSE)
+           return $this->request('sendPhoto', ["chat_id" => $chatId, "photo" => new CURLFile(realpath($pathToFile))]);
+
+        return $this->request('sendPhoto', ["chat_id" => $chatId, "photo" => $pathToFile]);
     }
 
     private function request($tgMethod, $params = array()) {
