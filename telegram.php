@@ -42,24 +42,27 @@ class Telegram {
 
     private function request($tgMethod, $params = array()) {
         $url = $this->url . $tgMethod;
-        $ch = curl_init($url);
-        // $params = http_build_query($params);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $ch = curl_init();
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $params,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
+
         $response = curl_exec($ch);
-        if ($response === false) {
-            throw new Exception(curl_error($ch));
-        }
+
         curl_close($ch);
 
         $data = json_decode($response, true);
-        if ($data['ok']) {
+
+        if(!empty($data) && $data["ok"]){
             return $data['result'];
         }
+
         return $data;
     }
 }
