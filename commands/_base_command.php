@@ -17,7 +17,7 @@ abstract class BaseCommand {
     }
 
     public function hasAccess($id) {
-        return in_array($id, $this->allowedIds);
+        return in_array($id, $this->allowedIds) || empty($this->allowedIds);
     }
 
     abstract function process($chatId, $text, $userId, $packet);
