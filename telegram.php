@@ -21,13 +21,23 @@ class Telegram {
     }
 
     /**
+     * Метод удаления сообщений
+     * @param  [int]  $chatId     [ID чата]
+     * @param  [string] $messageId [ID сообщения, которое нужно удалить]
+     * @return [type]             [description]
+     */
+    public function deleteMessage($chatId, $messageId) {
+        return $this->request("deleteMessage", ["chat_id"=> $chatId, "message_id"=>$messageId]);
+    }
+
+    /**
      * Метод отправки файлов/документов
      * @param  [int]  $chatId     [ID чата]
      * @param  [string] $pathToFile [ПОЛНЫЙ ПУТЬ к файлу от корня]
      * @return [type]             [description]
      */
     public function sendDocument($chatId, $pathToFile){
-        return $this->request('sendDocument', ["chat_id" => $chatId, "document" => new CURLFile(realpath($pathToFile))]);
+        return $this->request('sendDocument', ["chat_id" => $chatId, "document" => $pathToFile]);
     }
 
     /**
@@ -37,7 +47,7 @@ class Telegram {
      * @return [type]             [description]
      */
     public function sendPhoto($chatId, $pathToFile){
-        
+
         if(filter_var($pathToFile, FILTER_VALIDATE_URL) === FALSE)
            return $this->request('sendPhoto', ["chat_id" => $chatId, "photo" => new CURLFile(realpath($pathToFile))]);
 
@@ -47,7 +57,6 @@ class Telegram {
     private function request($tgMethod, $params = array()) {
         $url = $this->url . $tgMethod;
         $ch = curl_init();
-
         curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
@@ -66,7 +75,7 @@ class Telegram {
         if(!empty($data) && $data["ok"]){
             return $data['result'];
         }
-
+        
         return $data;
     }
 }
