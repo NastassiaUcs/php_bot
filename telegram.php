@@ -20,6 +20,9 @@ class Telegram {
         return $this->request('sendMessage', array('chat_id' => $chatId, 'text' => $text));
     }
 
+    public function getMe(){
+        return $this->request("getMe");
+    }
     /**
      * Метод удаления сообщений
      * @param  [int]  $chatId     [ID чата]

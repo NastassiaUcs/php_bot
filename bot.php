@@ -10,10 +10,17 @@ class Bot {
     private $config;
     /* @var Telegram */
     private $tg;
+    private $aliases = [];
 
     public function __construct($config) {
         $this->config = $config;
         $this->tg = new Telegram($config['token']);
+        $this->bot = $this->tg->getMe();
+        if(empty($this->bot["username"])) exit("Не верный токен\r\n");
+
+        if(file_exists(DIR_BOT_ROOT."aliases.json")){
+            $this->aliases = json_decode(file_get_contents(DIR_BOT_ROOT."aliases.json"),true);
+        }
     }
 
     public function loadCommand($commandName) {
@@ -36,15 +43,22 @@ class Bot {
         );
         if ($text[0] == '/') {
             $parts = explode(' ', $text);
-            $cmdName = substr($parts[0], 1);
+            $cmdName = str_replace("@".$this->bot["username"],"", substr($parts[0], 1)); // временно... для работы команды /команда@имя_бота
             $result['is_command'] = true;
             $result['command_name'] = $cmdName;
+        }elseif(!empty($this->aliases)){
+			$text = mb_strtolower(trim($text));
+        	if(array_key_exists($text, $this->aliases)){
+	            $result['is_command'] = true;
+	            $result['command_name'] = $this->aliases[$text];
+        	}
         }
         return $result;
     }
 
     public function processPacket($packet){
-        if (isset($packet['message'])) {
+        print_r($packet);
+        if (isset($packet['message']['text'])) {
             $text = $packet['message']['text'];
             $chatId = $packet['message']['chat']['id'];
             $userId = $packet['message']['from']['id'];
