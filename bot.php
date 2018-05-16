@@ -58,6 +58,7 @@ class Bot {
                     }elseif(!empty($result)){
                         $this->tg->sendMessage($chatId, $result);
                     }
+                    $this->tg->deleteMessage($chatId,$packet['message']["message_id"]);
                 }
             }
         }
